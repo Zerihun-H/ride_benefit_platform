@@ -10,6 +10,9 @@ import (
 type DriverPersistence interface {
 	GetDriver(driverID uint64) (*model.Driver, error)
 	AddDriver(driver *model.Driver) (*model.Driver, error)
+	UpdateDriver(driver *model.Driver) (*model.Driver, error)
+	DeleteDriver(driverID uint64) error
+	AddDrivers(drivers []model.Driver) error
 }
 
 type driverPersistence struct {
@@ -39,4 +42,27 @@ func (dp *driverPersistence) AddDriver(driver *model.Driver) (*model.Driver, err
 		return nil, err
 	}
 	return driver, nil
+}
+
+// AddDriver is adds a driver to the database given a valid diver
+func (dp *driverPersistence) UpdateDriver(driver *model.Driver) (*model.Driver, error) {
+	updatedDriver := driver
+	err := dp.db.First(driver).Error
+	if err != nil {
+		return nil, err
+	}
+	updatedDriver.ID = driver.ID
+	dp.db.Save(&updatedDriver)
+	return driver, nil
+}
+
+// DeleteDriver is adds a driver to the database given a valid diver
+func (dp *driverPersistence) DeleteDriver(driverID uint64) error {
+
+	return dp.db.Where("id = ?", driverID).Delete(&model.Driver{}).Error
+}
+
+// AddDrivers is adds a drivers to the database given valid divers
+func (dp *driverPersistence) AddDrivers(drivers []model.Driver) error {
+	return dp.db.Create(drivers).Error
 }

@@ -1,26 +1,33 @@
 package driver
 
-import "rideBenefit/internal/constant/model"
+import (
+	"rideBenefit/internal/constant/model"
+)
 
 func (s *service) GetDriver(driverID uint64) (*model.Driver, error) {
 	// Some validation
 
-	driver, err := s.driverPersist.GetDriver(driverID)
-	if err != nil {
-		return nil, err
-	}
-
-	return driver, nil
+	return s.driverPersist.GetDriver(driverID)
 }
 
 func (s *service) AddDriver(driver *model.Driver) (*model.Driver, error) {
-	// Check if the drivered pruduct is valid and available
-	// Check if the customer is valid
-	// Check if the shop is valid
-	drv, err := s.driverPersist.AddDriver(driver)
-	if err != nil {
-		return nil, err
-	}
 
-	return drv, nil
+	return s.driverPersist.AddDriver(driver)
+}
+
+func (s *service) UpdateDriver(driver *model.Driver) (*model.Driver, error) {
+
+	return s.driverPersist.UpdateDriver(driver)
+
+}
+
+func (s *service) DeleteDriver(driverID uint64) error {
+
+	return s.driverPersist.DeleteDriver(driverID)
+
+}
+
+func (s *service) AddDrivers(drivers []model.Driver) error {
+
+	return s.driverPersist.AddDrivers(drivers)
 }
