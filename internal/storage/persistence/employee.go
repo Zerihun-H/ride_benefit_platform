@@ -73,17 +73,18 @@ func (dp *employeePersistence) UpdateEmployee(employee *model.Employee) (*model.
 		return nil, err
 	}
 	defer dbc.Close()
-	updatedEmployee := employee
+	updatedEmployee := *employee
 	err = db.First(employee).Error
 	if err != nil {
 		return nil, err
 	}
+
 	updatedEmployee.ID = employee.ID
 	err = db.Save(&updatedEmployee).Error
 	if err != nil {
 		return nil, err
 	}
-	return employee, nil
+	return &updatedEmployee, nil
 }
 
 // DeleteEmployee is adds a employee to the database given a valid diver
@@ -100,7 +101,7 @@ func (dp *employeePersistence) DeleteEmployee(employeeID uint64) error {
 	return db.Where("id = ?", employeeID).Delete(&model.Employee{}).Error
 }
 
-// AddEmployees is adds a employees to the database given valid divers
+// AddEmployees is adds a employees to the database given valid employees
 func (dp *employeePersistence) AddEmployees(employees []model.Employee) error {
 	db, err := dp.db.Open()
 	if err != nil {

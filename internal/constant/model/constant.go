@@ -10,3 +10,4 @@ const (
 
 var ErrInvalidEmployeeID = errors.New("invalid employee ID")
 var ErrInvalidRequestBody = errors.New("invalid request body")
+var ErrInvalidPartnerID = errors.New("invalid partner ID")
