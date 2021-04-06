@@ -1,7 +1,9 @@
 package rest
 
 import (
+	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"rideBenefit/internal/constant/model"
@@ -121,7 +123,6 @@ func (dh *driverHandler) DeleteDriver(w http.ResponseWriter, r *http.Request, ps
 	}
 
 	w.WriteHeader(http.StatusOK)
-
 }
 
 func (dh *driverHandler) AddDriversExcel(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -150,10 +151,32 @@ func (dh *driverHandler) AddDriversExcel(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 }
 
 func (dh *driverHandler) AddDriversCSV(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	parseDrivesCSV()
+	file, header, err := r.FormFile("drivers")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	log.Println("File Name", header.Filename)
+	csv := csv.NewReader(file)
+
+	drivers, err := parseDrivesCSV(csv)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = dh.DriverCase.AddDrivers(drivers)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }
 
 func parseDriversExcel(f *excelize.File) ([]model.Driver, error) {
@@ -202,13 +225,55 @@ func parseDriversExcel(f *excelize.File) ([]model.Driver, error) {
 		driver.Age = uint32(age)
 		drivers = append(drivers, driver)
 	}
-	// for _, driver := range drivers {
-	// 	fmt.Printf("FirstName : %v LastName : %v BirthDate : %v", driver.FirstName, driver.LastName, driver.BirthDate)
-	// }
 	return drivers, nil
-
 }
 
-func parseDrivesCSV() ([]model.Driver, error) {
-	return []model.Driver{}, nil
+func parseDrivesCSV(cr *csv.Reader) ([]model.Driver, error) {
+
+	records, err := cr.ReadAll()
+	if err != nil {
+		return []model.Driver{}, err
+	}
+	drivers := []model.Driver{}
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		fmt.Printf("FirstName: %s LastName %s\n", record[1], record[2])
+
+		driver := model.Driver{}
+		// Parse DriverID
+		driverID, err := strconv.Atoi(record[0])
+		if err != nil {
+			panic(err)
+		}
+		driver.ID = uint64(driverID)
+		driver.FirstName = record[1]
+		driver.LastName = record[2]
+		driver.Surname = record[3]
+		// Parse date
+		birthdate, err := time.Parse(birthdateLayout, record[4])
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		driver.BirthDate = &birthdate
+
+		driver.Gender = record[5]
+		driver.Email = record[6]
+		driver.PhoneNumber = record[7]
+		driver.SideNumber = record[8]
+		driver.EmergencyContact = record[9]
+		driver.EmergencyNumber = record[10]
+		// parse age
+		age, err := strconv.Atoi(record[11])
+		if err != nil {
+			panic(err)
+		}
+		driver.Age = uint32(age)
+		drivers = append(drivers, driver)
+
+	}
+
+	return drivers, nil
 }
