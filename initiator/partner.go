@@ -1,8 +1,6 @@
 package initiator
 
 import (
-	"log"
-
 	routing "rideBenefit/internal/api/rest"
 	"rideBenefit/internal/handler/rest"
 	"rideBenefit/internal/module/partner"
@@ -15,16 +13,8 @@ import (
 // Partner initializes the domain partner
 func Partner(cockroachPlatform cockroach.CockroachPlatform) []httprouter.Router {
 
-	// Get the platform connection closer
-	db := cockroachPlatform.Open()
-	dbc, err := db.DB()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer dbc.Close()
-
 	// Initiate the partner persistence
-	partnerPersistence := persistence.PartnerInit(db)
+	partnerPersistence := persistence.PartnerInit(cockroachPlatform)
 	// Initiate the partner repository
 	partnerRepository := repository.PartnerInit()
 	// Initiate the partner service

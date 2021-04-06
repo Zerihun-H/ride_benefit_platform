@@ -8,5 +8,5 @@ const (
 	RolePartner    = "partner"
 )
 
-var ErrInvalidDriverID = errors.New("invalid driver ID")
+var ErrInvalidEmployeeID = errors.New("invalid employee ID")
 var ErrInvalidRequestBody = errors.New("invalid request body")
