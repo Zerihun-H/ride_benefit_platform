@@ -10,6 +10,8 @@ import (
 type Usecase interface {
 	GetPartner(partnerID uint64) (*model.Partner, error)
 	AddPartner(partner *model.Partner) (*model.Partner, error)
+	UpdatePartner(partner *model.Partner) (*model.Partner, error)
+	DeletePartner(partnerID uint64) error
 }
 
 type service struct {

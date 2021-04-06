@@ -14,13 +14,26 @@ func (s *service) GetPartner(partnerID uint64) (*model.Partner, error) {
 }
 
 func (s *service) AddPartner(partner *model.Partner) (*model.Partner, error) {
-	// Check if the partnered pruduct is valid and available
-	// Check if the customer is valid
-	// Check if the shop is valid
-	ordr, err := s.partnerPersist.AddPartner(partner)
+
+	part, err := s.partnerPersist.AddPartner(partner)
 	if err != nil {
 		return nil, err
 	}
 
-	return ordr, nil
+	return part, nil
+}
+
+func (s *service) UpdatePartner(partner *model.Partner) (*model.Partner, error) {
+
+	part, err := s.partnerPersist.UpdatePartner(partner)
+	if err != nil {
+		return nil, err
+	}
+
+	return part, nil
+}
+
+func (s *service) DeletePartner(partnerID uint64) error {
+
+	return s.partnerPersist.DeletePartner(partnerID)
 }

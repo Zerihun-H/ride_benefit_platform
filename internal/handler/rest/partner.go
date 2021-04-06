@@ -33,10 +33,10 @@ func PartnerInit(PartnerCase partner.Usecase) PartnerHandler {
 func (dh *partnerHandler) GetPartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Check if the diver ID param is valid
 	partnerID := ps.ByName("partnerID")
-	// Convert the employeeID string to uint64
+	// Convert the partnerID string to uint64
 	id, err := strconv.Atoi(partnerID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		http.Error(w, model.ErrInvalidPartnerID.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -55,11 +55,58 @@ func (dh *partnerHandler) GetPartner(w http.ResponseWriter, r *http.Request, ps 
 }
 
 func (dh *partnerHandler) AddPartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Parse partner data
+	partner := &model.Partner{}
+	err := json.NewDecoder(r.Body).Decode(&partner)
+	if err != nil {
+		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		return
+	}
+	part, err := dh.PartnerCase.AddPartner(partner)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(part)
 }
 func (dh *partnerHandler) UpdatePartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Parse partner data
+	partner := &model.Partner{}
+	err := json.NewDecoder(r.Body).Decode(&partner)
+	if err != nil {
+		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		return
+	}
+
+	drv, err := dh.PartnerCase.UpdatePartner(partner)
+	if err != nil {
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(drv)
 }
 
 func (dh *partnerHandler) DeletePartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Check if the diver ID param is valid
+	partnerID := ps.ByName("partnerID")
+	// Convert the partnerID string to uint64
+	id, err := strconv.Atoi(partnerID)
+	if err != nil {
+		http.Error(w, model.ErrInvalidPartnerID.Error(), http.StatusBadRequest)
+	}
+	err = dh.PartnerCase.DeletePartner(uint64(id))
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			http.Error(w, model.ErrInvalidPartnerID.Error(), http.StatusBadRequest)
+			return
+		}
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 
+	w.WriteHeader(http.StatusOK)
 }

@@ -23,12 +23,12 @@ func PartnerRouting(handler rest.PartnerHandler) []httprouter.Router {
 		{
 			Method:  http.MethodPatch,
 			Path:    "/partner",
-			Handler: handler.AddPartner,
+			Handler: handler.UpdatePartner,
 		},
 		{
 			Method:  http.MethodDelete,
 			Path:    "/partner/:partnerID",
-			Handler: handler.AddPartner,
+			Handler: handler.DeletePartner,
 		},
 	}
 }
