@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// Driver ...
-type Driver struct {
+// Employee ...
+type Employee struct {
 	ID               uint64     `json:"id" gorm:"primarykey"`
 	FirstName        string     `json:"firstName"`
 	LastName         string     `json:"lastName"`
@@ -17,11 +17,12 @@ type Driver struct {
 	Gender           string     `json:"gender"`
 	BirthDate        *time.Time `json:"birthDate"`
 	PhotoURL         string     `json:"photoURL"`
+	IDPhotoURL       string     `json:"idPhotoURL"`
 	Surname          string     `json:"surname"`
-	SideNumber       string     `json:"sideNumber"`
 	EmergencyContact string     `json:"emergencyContact"`
 	EmergencyNumber  string     `json:"emergencyNumber"`
 	Suspended        bool       `json:"suspended"`
+	Type             string     `json:"type"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

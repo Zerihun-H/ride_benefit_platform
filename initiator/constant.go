@@ -6,9 +6,8 @@ import (
 )
 
 const (
-	cockroachURL = "host=%v user=%v password=%v dbname=%v port=%v sslmode=disable"
-
-	domain = "rideBenefit"
+	cockroachURL = "postgres://%v:%v@%v:%v/%v?sslmode=disable"
+	domain       = "rideBenefit"
 )
 
 var (
@@ -17,5 +16,5 @@ var (
 	dbPass = os.Getenv("CR_PASS")
 	dbHost = os.Getenv("CR_HOST")
 	dbPort = os.Getenv("CR_PORT")
-	dbURL  = fmt.Sprintf(cockroachURL, dbHost, dbUser, dbPass, dbName, dbPort)
+	dbURL  = fmt.Sprintf(cockroachURL, dbUser, dbPass, dbHost, dbPort, dbName)
 )

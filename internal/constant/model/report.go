@@ -11,7 +11,7 @@ type Report struct {
 	Description string `json:"description"`
 	Name        string `json:"name"`
 	PartnerID   uint64 `json:"partnerID"`
-	Driver_id   uint64 `json:"driverID"`
+	EmployeeID  uint64 `json:"employeeID"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -23,17 +23,17 @@ func Initiator() {
 	// Initiate cockroach
 	cockroahPlatform := CockroachInitiator()
 
-	// Initiate driver module and
-	driverRouters := Driver(cockroahPlatform)
+	// Initiate employee module and
+	employeeRouters := Employee(cockroahPlatform)
 	partnerRouters := Partner(cockroahPlatform)
 
 	routers := []httprouter.Router{}
-	routers = append(routers, driverRouters...)
+	routers = append(routers, employeeRouters...)
 	routers = append(routers, partnerRouters...)
 
 	// Get self host port
-	hostPort := os.Getenv("HOST_PORT")
-	hostAddress := os.Getenv("HOST_ADDRESS")
+	hostPort := os.Getenv("SELF_PORT")
+	hostAddress := os.Getenv("SELF_ADDRESS")
 	hostURL := fmt.Sprintf(hostAddress + ":" + hostPort)
 	log.Println("HostURL", hostURL)
 	// Get the allowed request origins for the http server

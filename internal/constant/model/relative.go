@@ -16,7 +16,7 @@ type Relative struct {
 	Gender      string     `json:"gender"`
 	BirthDate   *time.Time `json:"birthDate"`
 	PhotoURL    string     `json:"PhotoURL"`
-	DriverID    uint64     `json:"driverID"`
+	EmployeeID  uint64     `json:"employeeID"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

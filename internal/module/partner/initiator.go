@@ -1,12 +1,15 @@
 package partner
 
 import (
+	"rideBenefit/internal/constant/model"
 	"rideBenefit/internal/repository"
 	"rideBenefit/internal/storage/persistence"
 )
 
 // Usecase contains the function of business logic of domain partner
 type Usecase interface {
+	GetPartner(partnerID uint64) (*model.Partner, error)
+	AddPartner(partner *model.Partner) (*model.Partner, error)
 }
 
 type service struct {

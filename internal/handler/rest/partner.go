@@ -1,10 +1,14 @@
 package rest
 
 import (
+	"encoding/json"
 	"net/http"
+	"rideBenefit/internal/constant/model"
 	partner "rideBenefit/internal/module/partner"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
+	"gorm.io/gorm"
 )
 
 // PartnerHandler contains the function of handler for domain Partner
@@ -27,6 +31,27 @@ func PartnerInit(PartnerCase partner.Usecase) PartnerHandler {
 }
 
 func (dh *partnerHandler) GetPartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Check if the diver ID param is valid
+	partnerID := ps.ByName("partnerID")
+	// Convert the employeeID string to uint64
+	id, err := strconv.Atoi(partnerID)
+	if err != nil {
+		http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		return
+	}
+
+	partner, err := dh.PartnerCase.GetPartner(uint64(id))
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			http.Error(w, gorm.ErrRecordNotFound.Error(), http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(partner)
 }
 
 func (dh *partnerHandler) AddPartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

@@ -1,7 +1,6 @@
 package cockroach
 
 import (
-	"log"
 	"rideBenefit/internal/constant/model"
 
 	"gorm.io/driver/postgres"
@@ -9,7 +8,7 @@ import (
 )
 
 type CockroachPlatform interface {
-	Open() *gorm.DB
+	Open() (*gorm.DB, error)
 	Migrate() error
 }
 
@@ -22,25 +21,23 @@ func Initialize(dbURL string) CockroachPlatform {
 		dbURL: dbURL}
 }
 
-func (cp *cockroachPlatform) Open() *gorm.DB {
-	db, err := gorm.Open(postgres.Open(cp.dbURL), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return db
+func (cp *cockroachPlatform) Open() (*gorm.DB, error) {
+	return gorm.Open(postgres.Open(cp.dbURL), &gorm.Config{})
 }
 
 func (cp *cockroachPlatform) Migrate() error {
-	db := cp.Open()
+	db, err := cp.Open()
+	if err != nil {
+		return err
+	}
 	dbc, err := db.DB()
 	if err != nil {
 		return err
 	}
 	defer dbc.Close()
 
-	if !db.Migrator().HasTable(&model.Driver{}) {
-		err := db.Migrator().CreateTable(&model.Driver{})
+	if !db.Migrator().HasTable(&model.Employee{}) {
+		err := db.Migrator().CreateTable(&model.Employee{})
 		if err != nil {
 			return err
 		}
