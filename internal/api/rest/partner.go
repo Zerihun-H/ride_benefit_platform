@@ -20,5 +20,15 @@ func PartnerRouting(handler rest.PartnerHandler) []httprouter.Router {
 			Path:    "/partner",
 			Handler: handler.AddPartner,
 		},
+		{
+			Method:  http.MethodPatch,
+			Path:    "/partner",
+			Handler: handler.AddPartner,
+		},
+		{
+			Method:  http.MethodDelete,
+			Path:    "/partner/:partnerID",
+			Handler: handler.AddPartner,
+		},
 	}
 }

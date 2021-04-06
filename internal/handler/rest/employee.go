@@ -3,8 +3,6 @@ package rest
 import (
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"rideBenefit/internal/constant/model"
 	Employee "rideBenefit/internal/module/employee"
@@ -85,6 +83,7 @@ func (dh *employeeHandler) AddEmployee(w http.ResponseWriter, r *http.Request, p
 	json.NewEncoder(w).Encode(drv)
 
 }
+
 func (dh *employeeHandler) UpdateEmployee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Parse employee data
 	employee := &model.Employee{}
@@ -154,12 +153,11 @@ func (dh *employeeHandler) AddEmployeesExcel(w http.ResponseWriter, r *http.Requ
 }
 
 func (dh *employeeHandler) AddEmployeesCSV(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	file, header, err := r.FormFile("employees")
+	file, _, err := r.FormFile("employees")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Println("File Name", header.Filename)
 	csv := csv.NewReader(file)
 
 	employees, err := parseEmployeesCSV(csv)
@@ -198,9 +196,6 @@ func parseEmployeesExcel(f *excelize.File) ([]model.Employee, error) {
 		// Parse EmployeeID
 		employeeID, err := strconv.Atoi(row[0])
 		if err != nil {
-			log.Println("parsing id", err)
-			log.Println("id ", row[0])
-
 			return []model.Employee{}, err
 		}
 
@@ -212,7 +207,6 @@ func parseEmployeesExcel(f *excelize.File) ([]model.Employee, error) {
 		birthdate, err := time.Parse(birthdateLayout, row[4])
 
 		if err != nil {
-			log.Println("parsing date", err)
 			return []model.Employee{}, err
 		}
 
@@ -226,7 +220,6 @@ func parseEmployeesExcel(f *excelize.File) ([]model.Employee, error) {
 		// parse age
 		age, err := strconv.Atoi(row[10])
 		if err != nil {
-			log.Println("parsing age", err)
 
 			return []model.Employee{}, err
 		}
@@ -248,13 +241,12 @@ func parseEmployeesCSV(cr *csv.Reader) ([]model.Employee, error) {
 		if i == 0 {
 			continue
 		}
-		fmt.Printf("FirstName: %s LastName %s\n", record[1], record[2])
 
 		employee := model.Employee{}
 		// Parse EmployeeID
 		employeeID, err := strconv.Atoi(record[0])
 		if err != nil {
-			panic(err)
+			return []model.Employee{}, err
 		}
 		employee.ID = uint64(employeeID)
 		employee.FirstName = record[1]
@@ -264,7 +256,7 @@ func parseEmployeesCSV(cr *csv.Reader) ([]model.Employee, error) {
 		birthdate, err := time.Parse(birthdateLayout, record[4])
 
 		if err != nil {
-			fmt.Println(err)
+			return []model.Employee{}, err
 		}
 		employee.BirthDate = &birthdate
 
@@ -273,13 +265,13 @@ func parseEmployeesCSV(cr *csv.Reader) ([]model.Employee, error) {
 		employee.PhoneNumber = record[7]
 		employee.EmergencyContact = record[8]
 		employee.EmergencyNumber = record[9]
-		employee.Type = record[10]
 		// parse age
-		age, err := strconv.Atoi(record[11])
+		age, err := strconv.Atoi(record[10])
 		if err != nil {
-			panic(err)
+			return []model.Employee{}, err
 		}
 		employee.Age = uint32(age)
+		employee.Type = record[11]
 		employees = append(employees, employee)
 
 	}
