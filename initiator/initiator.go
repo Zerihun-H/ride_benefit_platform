@@ -35,7 +35,7 @@ func Initiator() {
 	hostPort := os.Getenv("SELF_PORT")
 	hostAddress := os.Getenv("SELF_ADDRESS")
 	hostURL := fmt.Sprintf(hostAddress + ":" + hostPort)
-	log.Println("HostURL", hostURL)
+
 	// Get the allowed request origins for the http server
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 	// Initiate the http server

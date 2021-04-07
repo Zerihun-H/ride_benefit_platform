@@ -1,4 +1,4 @@
-package routing
+package rest
 
 import (
 	"net/http"
