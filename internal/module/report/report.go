@@ -14,13 +14,26 @@ func (s *service) GetReport(reportID uint64) (*model.Report, error) {
 }
 
 func (s *service) AddReport(report *model.Report) (*model.Report, error) {
-	// Check if the reported pruduct is valid and available
-	// Check if the customer is valid
-	// Check if the shop is valid
-	drv, err := s.reportPersist.AddReport(report)
+
+	part, err := s.reportPersist.AddReport(report)
 	if err != nil {
 		return nil, err
 	}
 
-	return drv, nil
+	return part, nil
+}
+
+func (s *service) UpdateReport(report *model.Report) (*model.Report, error) {
+
+	part, err := s.reportPersist.UpdateReport(report)
+	if err != nil {
+		return nil, err
+	}
+
+	return part, nil
+}
+
+func (s *service) DeleteReport(reportID uint64) error {
+
+	return s.reportPersist.DeleteReport(reportID)
 }

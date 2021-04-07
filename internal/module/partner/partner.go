@@ -3,7 +3,6 @@ package partner
 import "rideBenefit/internal/constant/model"
 
 func (s *service) GetPartner(partnerID uint64) (*model.Partner, error) {
-	// Some validation
 
 	partner, err := s.partnerPersist.GetPartner(partnerID)
 	if err != nil {

@@ -14,13 +14,26 @@ func (s *service) GetRelative(relativeID uint64) (*model.Relative, error) {
 }
 
 func (s *service) AddRelative(relative *model.Relative) (*model.Relative, error) {
-	// Check if the relativeed pruduct is valid and available
-	// Check if the customer is valid
-	// Check if the shop is valid
-	drv, err := s.relativePersist.AddRelative(relative)
+
+	rel, err := s.relativePersist.AddRelative(relative)
 	if err != nil {
 		return nil, err
 	}
 
-	return drv, nil
+	return rel, nil
+}
+
+func (s *service) UpdateRelative(relative *model.Relative) (*model.Relative, error) {
+
+	rel, err := s.relativePersist.UpdateRelative(relative)
+	if err != nil {
+		return nil, err
+	}
+
+	return rel, nil
+}
+
+func (s *service) DeleteRelative(relativeID uint64) error {
+
+	return s.relativePersist.DeleteRelative(relativeID)
 }

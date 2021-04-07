@@ -15,8 +15,10 @@ type Relative struct {
 	Age         uint32     `json:"age"`
 	Gender      string     `json:"gender"`
 	BirthDate   *time.Time `json:"birthDate"`
-	PhotoURL    string     `json:"PhotoURL"`
+	PhotoURL    string     `json:"photoURL"`
+	IDURL       string     `json:"idURL"`
 	EmployeeID  uint64     `json:"employeeID"`
+	Employee    Employee   `gorm:"foreignKey:EmployeeID"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

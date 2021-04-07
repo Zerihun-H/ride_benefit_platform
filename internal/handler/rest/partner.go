@@ -31,7 +31,7 @@ func PartnerInit(PartnerCase partner.Usecase) PartnerHandler {
 }
 
 func (dh *partnerHandler) GetPartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	// Check if the diver ID param is valid
+	// Check if the partner ID param is valid
 	partnerID := ps.ByName("partnerID")
 	// Convert the partnerID string to uint64
 	id, err := strconv.Atoi(partnerID)
@@ -71,6 +71,7 @@ func (dh *partnerHandler) AddPartner(w http.ResponseWriter, r *http.Request, ps 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(part)
 }
+
 func (dh *partnerHandler) UpdatePartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Parse partner data
 	partner := &model.Partner{}
@@ -80,18 +81,18 @@ func (dh *partnerHandler) UpdatePartner(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	drv, err := dh.PartnerCase.UpdatePartner(partner)
+	prt, err := dh.PartnerCase.UpdatePartner(partner)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(drv)
+	json.NewEncoder(w).Encode(prt)
 }
 
 func (dh *partnerHandler) DeletePartner(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	// Check if the diver ID param is valid
+	// Check if the partner ID param is valid
 	partnerID := ps.ByName("partnerID")
 	// Convert the partnerID string to uint64
 	id, err := strconv.Atoi(partnerID)
