@@ -8,6 +8,7 @@ const (
 	RolePartner    = "partner"
 )
 
-var ErrInvalidEmployeeID = errors.New("invalid employee ID")
 var ErrInvalidRequestBody = errors.New("invalid request body")
+var ErrInvalidEmployeeID = errors.New("invalid employee ID")
+var ErrInvalidUserID = errors.New("invalid user ID")
 var ErrInvalidPartnerID = errors.New("invalid partner ID")
