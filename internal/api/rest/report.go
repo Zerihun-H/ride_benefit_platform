@@ -1,29 +1,34 @@
-package initiator
+package rest
 
 import (
-	routing "rideBenefit/internal/api/rest"
+	"net/http"
+
 	"rideBenefit/internal/handler/rest"
-	"rideBenefit/internal/module/report"
-	"rideBenefit/internal/repository"
-	"rideBenefit/internal/storage/persistence"
-	"rideBenefit/platform/cockroach"
 	"rideBenefit/platform/httprouter"
 )
 
-// Report initializes the domain report
-func Report(cockroachPlatform cockroach.CockroachPlatform) []httprouter.Router {
-
-	// Initiate the report persistence
-	reportPersistence := persistence.ReportInit(cockroachPlatform)
-	// Initiate the report repository
-	reportRepository := repository.ReportInit()
-	// Initiate the report service
-	usecase := report.Initialize(reportRepository, reportPersistence)
-
-	// Initiate the report rest API handler
-	handler := rest.ReportInit(usecase)
-
-	// Initiate the report routing
-	return routing.ReportRouting(handler)
-
+// ReportRouting returns the list of routers for domain report
+func ReportRouting(handler rest.ReportHandler) []httprouter.Router {
+	return []httprouter.Router{
+		{
+			Method:  http.MethodGet,
+			Path:    "/report/:reportID",
+			Handler: handler.GetReport,
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/report",
+			Handler: handler.AddReport,
+		},
+		{
+			Method:  http.MethodPatch,
+			Path:    "/report",
+			Handler: handler.UpdateReport,
+		},
+		{
+			Method:  http.MethodDelete,
+			Path:    "/report/:reportID",
+			Handler: handler.DeleteReport,
+		},
+	}
 }

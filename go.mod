@@ -3,6 +3,7 @@ module rideBenefit
 go 1.16
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgx/v4 v4.11.0 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
