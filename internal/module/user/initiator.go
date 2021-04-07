@@ -1,12 +1,17 @@
 package user
 
 import (
+	"rideBenefit/internal/constant/model"
 	"rideBenefit/internal/repository"
 	"rideBenefit/internal/storage/persistence"
 )
 
 // Usecase contains the function of business logic of domain user
 type Usecase interface {
+	GetUser(userID uint64) (*model.User, error)
+	AddUser(user *model.User) (*model.User, error)
+	UpdateUser(user *model.User) (*model.User, error)
+	DeleteUser(userID uint64) error
 }
 
 type service struct {
@@ -20,5 +25,4 @@ func Initialize(userRepo repository.UserRepository, userPersist persistence.User
 		userRepo:    userRepo,
 		userPersist: userPersist,
 	}
-
 }
