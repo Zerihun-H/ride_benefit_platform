@@ -8,6 +8,6 @@ type serviceRepository struct {
 }
 
 // ServiceInit initializes the data logic / repository for domain service
-func Service() ServiceRepository {
+func ServiceInit() ServiceRepository {
 	return serviceRepository{}
 }
