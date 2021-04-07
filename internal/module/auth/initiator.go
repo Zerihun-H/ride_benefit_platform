@@ -1,12 +1,14 @@
 package auth
 
 import (
+	"rideBenefit/internal/constant/model"
 	"rideBenefit/internal/repository"
 	"rideBenefit/internal/storage/persistence"
 )
 
 // Usecase contains the function of business logic of domain auth
 type Usecase interface {
+	Login(login *model.LoginModel) (bool, string, error)
 }
 
 type service struct {

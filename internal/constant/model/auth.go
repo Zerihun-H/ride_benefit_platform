@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	"gorm.io/gorm"
 )
 
@@ -47,4 +48,14 @@ type Resource struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
+type LoginModel struct {
+	Username string `json:"usename"`
+	Password string `json:"password"`
+}
 
+// Claims ...
+type Claims struct {
+	UserID uint64 `json:"uid"`
+	RoleID string `json:"rle"`
+	jwt.StandardClaims
+}
