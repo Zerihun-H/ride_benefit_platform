@@ -22,3 +22,14 @@ func (s *service) AddRole(auth *model.Role) (*model.Role, error) {
 
 	return drv, nil
 }
+
+func (s *service) RoleHasPermission(roleID, permissionID uint64) (bool, error) {
+
+	// Get the role's permissions
+
+	return true, nil
+}
+
+func (s *service) RolePermissions(roleID uint64) ([]model.Permission, error) {
+	return s.authPersist.GetRolePermissions(roleID)
+}

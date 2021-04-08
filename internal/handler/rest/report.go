@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"rideBenefit/internal/constant"
 	"rideBenefit/internal/constant/model"
 	report "rideBenefit/internal/module/report"
 	"strconv"
@@ -36,7 +37,7 @@ func (dh *reportHandler) GetReport(w http.ResponseWriter, r *http.Request, ps ht
 	// Convert the reportID string to uint64
 	id, err := strconv.Atoi(reportID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidReportID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidReportID.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,7 +60,7 @@ func (dh *reportHandler) AddReport(w http.ResponseWriter, r *http.Request, ps ht
 	report := &model.Report{}
 	err := json.NewDecoder(r.Body).Decode(&report)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 	part, err := dh.ReportCase.AddReport(report)
@@ -76,7 +77,7 @@ func (dh *reportHandler) UpdateReport(w http.ResponseWriter, r *http.Request, ps
 	report := &model.Report{}
 	err := json.NewDecoder(r.Body).Decode(&report)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -96,12 +97,12 @@ func (dh *reportHandler) DeleteReport(w http.ResponseWriter, r *http.Request, ps
 	// Convert the reportID string to uint64
 	id, err := strconv.Atoi(reportID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidReportID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidReportID.Error(), http.StatusBadRequest)
 	}
 	err = dh.ReportCase.DeleteReport(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			http.Error(w, model.ErrInvalidReportID.Error(), http.StatusBadRequest)
+			http.Error(w, constant.ErrInvalidReportID.Error(), http.StatusBadRequest)
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)

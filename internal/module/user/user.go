@@ -1,6 +1,10 @@
 package user
 
-import "rideBenefit/internal/constant/model"
+import (
+	"rideBenefit/internal/constant/model"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 func (s *service) GetUser(userID uint64) (*model.User, error) {
 	// Some validation
@@ -14,23 +18,28 @@ func (s *service) GetUser(userID uint64) (*model.User, error) {
 }
 
 func (s *service) AddUser(user *model.User) (*model.User, error) {
-
-	part, err := s.userPersist.AddUser(user)
+	// Hash password
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = string(passwordHash)
+	usr, err := s.userPersist.AddUser(user)
 	if err != nil {
 		return nil, err
 	}
 
-	return part, nil
+	return usr, nil
 }
 
 func (s *service) UpdateUser(user *model.User) (*model.User, error) {
 
-	part, err := s.userPersist.UpdateUser(user)
+	usr, err := s.userPersist.UpdateUser(user)
 	if err != nil {
 		return nil, err
 	}
 
-	return part, nil
+	return usr, nil
 }
 
 func (s *service) DeleteUser(userID uint64) error {

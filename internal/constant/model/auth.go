@@ -39,7 +39,7 @@ type RolePermission struct {
 }
 
 type LoginModel struct {
-	Username string `json:"usename"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 

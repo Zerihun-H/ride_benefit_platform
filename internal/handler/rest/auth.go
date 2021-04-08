@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"rideBenefit/internal/constant/model"
 	"rideBenefit/internal/module/auth"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -13,6 +14,7 @@ import (
 type AuthHandler interface {
 	Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	RefreshAccessToken(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
+	RolePermissions(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 }
 
 type authHandler struct {
@@ -46,9 +48,23 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 	w.Write([]byte(accessToken))
-	w.WriteHeader(http.StatusOK)
 }
 
 func (ah *authHandler) RefreshAccessToken(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
 	w.WriteHeader(http.StatusOK)
 }
+
+func (ah *authHandler) RolePermissions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	roleID, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		return
+	}
+
+	ah.AuthCase.RolePermissions(uint64(roleID))
+	w.Write([]byte(ps.ByName("id")))
+}
+
+//

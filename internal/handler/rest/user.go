@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"rideBenefit/internal/constant"
 	"rideBenefit/internal/constant/model"
 	user "rideBenefit/internal/module/user"
 	"strconv"
@@ -36,7 +37,7 @@ func (uh *userHandler) GetUser(w http.ResponseWriter, r *http.Request, ps httpro
 	// Convert the userID string to uint64
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidUserID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidUserID.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,7 +60,7 @@ func (uh *userHandler) AddUser(w http.ResponseWriter, r *http.Request, ps httpro
 	user := &model.User{}
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 	part, err := uh.UserCase.AddUser(user)
@@ -76,7 +77,7 @@ func (uh *userHandler) UpdateUser(w http.ResponseWriter, r *http.Request, ps htt
 	user := &model.User{}
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -96,12 +97,12 @@ func (uh *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request, ps htt
 	// Convert the userID string to uint64
 	id, err := strconv.Atoi(userID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidUserID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidUserID.Error(), http.StatusBadRequest)
 	}
 	err = uh.UserCase.DeleteUser(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			http.Error(w, model.ErrInvalidUserID.Error(), http.StatusBadRequest)
+			http.Error(w, constant.ErrInvalidUserID.Error(), http.StatusBadRequest)
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)

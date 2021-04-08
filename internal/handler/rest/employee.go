@@ -4,8 +4,9 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"net/http"
-	"rideBenefit/internal/constant/model"
-	Employee "rideBenefit/internal/module/employee"
+	"rideBenefit/internal/constant"
+	model "rideBenefit/internal/constant/model"
+	"rideBenefit/internal/module/employee"
 	"strconv"
 	"time"
 
@@ -30,11 +31,12 @@ type EmployeeHandler interface {
 }
 
 type employeeHandler struct {
-	EmployeeCase Employee.Usecase
+	EmployeeCase employee.Usecase
 }
 
 // EmployeeInit is to initialize the rest handler for domain Employee
-func EmployeeInit(EmployeeCase Employee.Usecase) EmployeeHandler {
+func EmployeeInit(EmployeeCase employee.Usecase) EmployeeHandler {
+	
 	return &employeeHandler{
 		EmployeeCase,
 	}
@@ -46,7 +48,7 @@ func (dh *employeeHandler) GetEmployee(w http.ResponseWriter, r *http.Request, p
 	// Convert the employeeID string to uint64
 	id, err := strconv.Atoi(employeeID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -70,7 +72,7 @@ func (dh *employeeHandler) AddEmployee(w http.ResponseWriter, r *http.Request, p
 	employee := &model.Employee{}
 	err := json.NewDecoder(r.Body).Decode(&employee)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 	drv, err := dh.EmployeeCase.AddEmployee(employee)
@@ -89,7 +91,7 @@ func (dh *employeeHandler) UpdateEmployee(w http.ResponseWriter, r *http.Request
 	employee := &model.Employee{}
 	err := json.NewDecoder(r.Body).Decode(&employee)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -109,12 +111,12 @@ func (dh *employeeHandler) DeleteEmployee(w http.ResponseWriter, r *http.Request
 	// Convert the employeeID string to uint64
 	id, err := strconv.Atoi(employeeID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
 	}
 	err = dh.EmployeeCase.DeleteEmployee(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+			http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)

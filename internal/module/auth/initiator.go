@@ -9,6 +9,7 @@ import (
 // Usecase contains the function of business logic of domain auth
 type Usecase interface {
 	Login(login *model.LoginModel) (bool, string, error)
+	RolePermissions(roleID uint64) ([]model.Permission, error)
 }
 
 type service struct {

@@ -49,5 +49,12 @@ func (cp *cockroachPlatform) Migrate() error {
 			return err
 		}
 	}
+
+	if !db.Migrator().HasTable(&model.User{}) {
+		err := db.Migrator().CreateTable(&model.User{})
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

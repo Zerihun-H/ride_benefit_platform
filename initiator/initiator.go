@@ -27,11 +27,13 @@ func Initiator() {
 	employeeRouters := Employee(cockroahPlatform)
 	partnerRouters := Partner(cockroahPlatform)
 	authRouters := Auth(cockroahPlatform)
+	userRouters := User(cockroahPlatform)
 
 	routers := []httprouter.Router{}
 	routers = append(routers, employeeRouters...)
 	routers = append(routers, partnerRouters...)
 	routers = append(routers, authRouters...)
+	routers = append(routers, userRouters...)
 
 	// Get self host port
 	hostPort := os.Getenv("SELF_PORT")

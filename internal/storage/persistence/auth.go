@@ -10,6 +10,7 @@ type AuthPersistence interface {
 	GetRole(roleID uint64) (*model.Role, error)
 	AddRole(role *model.Role) (*model.Role, error)
 	GetUserByUsername(username string) (*model.User, error)
+	GetRolePermissions(roleID uint64) ([]model.Permission, error)
 }
 
 type authPersistence struct {
@@ -72,12 +73,26 @@ func (ap *authPersistence) GetUserByUsername(username string) (*model.User, erro
 		return nil, err
 	}
 	defer dbc.Close()
-
 	user := &model.User{}
-	if err := db.Where("user_name = ?", username).First(user).Error; err != nil {
+	if err := db.Where("username = ?", username).First(user).Error; err != nil {
 
 		return &model.User{}, err
 	}
 
 	return user, nil
+}
+
+func (ap *authPersistence) GetRolePermissions(roleID uint64) ([]model.Permission, error) {
+	db, err := ap.db.Open()
+	if err != nil {
+		return nil, err
+	}
+	dbc, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	defer dbc.Close()
+	permissions := []model.Permission{}
+	// Do a join on the rolepermissions and permissions table
+	return permissions, nil
 }
