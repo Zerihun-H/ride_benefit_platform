@@ -22,7 +22,6 @@ type Permission struct {
 	ID          uint64 `json:"id" gorm:"primarykey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	ResourceID  uint64 `json:"resourceID"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -39,22 +38,20 @@ type RolePermission struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-type Resource struct {
-	ID   uint   `gorm:"primarykey"`
-	Name string `json:"name"`
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-}
-
 type LoginModel struct {
 	Username string `json:"usename"`
 	Password string `json:"password"`
 }
 
-// Claims ...
-type Claims struct {
+// AccessTokenClaims ...
+type AccessTokenClaims struct {
+	UserID uint64 `json:"uid"`
+	RoleID string `json:"rle"`
+	jwt.StandardClaims
+}
+
+// RefreshTokenClaims ...
+type RefreshTokenClaims struct {
 	UserID uint64 `json:"uid"`
 	RoleID string `json:"rle"`
 	jwt.StandardClaims

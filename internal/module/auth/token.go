@@ -19,7 +19,7 @@ func ValidateRefreshToken(login *model.LoginModel) (bool, string, error) {
 func GenerateAccessToken(user model.User) (string, error) {
 
 	// Create the token
-	claims := model.Claims{
+	claims := model.AccessTokenClaims{
 		UserID: uint64(user.ID),
 		RoleID: strconv.Itoa(int(user.RoleID)),
 		StandardClaims: jwt.StandardClaims{

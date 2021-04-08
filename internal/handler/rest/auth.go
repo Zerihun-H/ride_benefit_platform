@@ -50,4 +50,5 @@ func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request, ps httprout
 }
 
 func (ah *authHandler) RefreshAccessToken(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	w.WriteHeader(http.StatusOK)
 }

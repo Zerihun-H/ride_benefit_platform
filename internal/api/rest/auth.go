@@ -14,9 +14,10 @@ func AuthRouting(handler rest.AuthHandler) []httprouter.Router {
 			Method:  http.MethodPost,
 			Path:    "/users/login",
 			Handler: handler.Login,
-		}, { // Update employee
+		},
+		{ // refresh access token
 			Method:  http.MethodPost,
-			Path:    "auth/refreshAccessToken",
+			Path:    "/auth/refreshAccessToken",
 			Handler: handler.RefreshAccessToken,
 		},
 	}
