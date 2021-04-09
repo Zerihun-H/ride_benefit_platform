@@ -63,8 +63,15 @@ func (ah *authHandler) RolePermissions(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
-	ah.AuthCase.RolePermissions(uint64(roleID))
-	w.Write([]byte(ps.ByName("id")))
+	permissions, err := ah.AuthCase.RolePermissions(uint64(roleID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+		return
+	}
+
+	json.NewEncoder(w).Encode(permissions)
+		// w.Write([]byte(permissions))
 }
 
 //

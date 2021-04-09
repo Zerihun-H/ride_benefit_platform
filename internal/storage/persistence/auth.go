@@ -1,8 +1,10 @@
 package persistence
 
 import (
+	"fmt"
 	"rideBenefit/internal/constant/model"
 	"rideBenefit/platform/cockroach"
+	"strconv"
 )
 
 // AuthPersistence contains the list of functions for database table auths
@@ -93,6 +95,14 @@ func (ap *authPersistence) GetRolePermissions(roleID uint64) ([]model.Permission
 	}
 	defer dbc.Close()
 	permissions := []model.Permission{}
-	// Do a join on the rolepermissions and permissions table
+	// Parse RoleID to string
+	rid := strconv.Itoa(int(roleID))
+	// Prerpare query statement
+	qry := fmt.Sprintf("SELECT name,description FROM public.role_permissions LEFT JOIN public.permissions ON public.role_permissions.permission_id = public.permissions.id where public.role_permissions.role_id = %v;", rid)
+	err = db.Raw(qry).Scan(&permissions).Error
+	if err != nil {
+		return nil, err
+	}
+
 	return permissions, nil
 }

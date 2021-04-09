@@ -8,10 +8,10 @@ import (
 )
 
 type Role struct {
-	ID          uint64           `json:"id" gorm:"primarykey"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	Permissions []RolePermission `json:"permissions" gorm:"foreignKey:RoleID"`
+	ID          uint64       `json:"id" gorm:"primarykey"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Permissions []Permission `json:"permissions" gorm:"many2many:role_permissions;"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -29,14 +29,14 @@ type Permission struct {
 }
 
 type RolePermission struct {
-	ID           uint64 `json:"id" gorm:"primarykey"`
-	RoleID       uint64 `json:"roleID"`
-	PermissionID uint64 `json:"permissionID"`
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	RoleID       uint64     `json:"roleID"`
+	PermissionID uint64     `json:"permissionID"`
+	Role         Role       `json:"Role" gorm:"foreignKey:RoleID"`
+	Permission   Permission `json:"Permission" gorm:"foreignKey:RoleID"`
 }
+
+// For implementing an in memory role permission cache
+type RolesPermissions map[string][]string
 
 type LoginModel struct {
 	Username string `json:"username"`
