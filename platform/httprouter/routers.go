@@ -5,14 +5,16 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/rileyr/middleware"
 	"github.com/sirupsen/logrus"
 )
 
 // Router data will be registered to http listener
 type Router struct {
-	Method  string
-	Path    string
-	Handler httprouter.Handle
+	Method      string
+	Path        string
+	Handler     httprouter.Handle
+	Middlewares []middleware.Middleware
 }
 
 type routing struct {
@@ -42,8 +44,16 @@ func (r *routing) Serve() {
 	server := httprouter.New()
 
 	for _, router := range r.routers {
-		// group.Add(router.Method, router.Path, router.Handler)
-		server.Handle(router.Method, router.Path, router.Handler)
+		if router.Middlewares != nil {
+			s := middleware.NewStack()
+			for _, middleware := range router.Middlewares {
+				s.Use(middleware)
+
+			}
+			server.Handle(router.Method, router.Path, s.Wrap(router.Handler))
+		} else {
+			server.Handle(router.Method, router.Path, router.Handler)
+		}
 	}
 
 	logrus.WithFields(logrus.Fields{

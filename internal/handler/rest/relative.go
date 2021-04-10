@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"rideBenefit/internal/constant"
 	"rideBenefit/internal/constant/model"
 	relative "rideBenefit/internal/module/relative"
 	"strconv"
@@ -36,7 +37,7 @@ func (dh *relativeHandler) GetRelative(w http.ResponseWriter, r *http.Request, p
 	// Convert the relativeID string to uint64
 	id, err := strconv.Atoi(relativeID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRelativeID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRelativeID.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,7 +60,7 @@ func (dh *relativeHandler) AddRelative(w http.ResponseWriter, r *http.Request, p
 	relative := &model.Relative{}
 	err := json.NewDecoder(r.Body).Decode(&relative)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 	part, err := dh.RelativeCase.AddRelative(relative)
@@ -76,7 +77,7 @@ func (dh *relativeHandler) UpdateRelative(w http.ResponseWriter, r *http.Request
 	relative := &model.Relative{}
 	err := json.NewDecoder(r.Body).Decode(&relative)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -96,12 +97,12 @@ func (dh *relativeHandler) DeleteRelative(w http.ResponseWriter, r *http.Request
 	// Convert the relativeID string to uint64
 	id, err := strconv.Atoi(relativeID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRelativeID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRelativeID.Error(), http.StatusBadRequest)
 	}
 	err = dh.RelativeCase.DeleteRelative(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			http.Error(w, model.ErrInvalidRelativeID.Error(), http.StatusBadRequest)
+			http.Error(w, constant.ErrInvalidRelativeID.Error(), http.StatusBadRequest)
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)

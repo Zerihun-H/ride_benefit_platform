@@ -55,7 +55,9 @@ func (up *userPersistence) AddUser(user *model.User) (*model.User, error) {
 		return nil, err
 	}
 	defer dbc.Close()
-	if err := db.Create(user).Error; err != nil {
+
+	err = db.Create(user).Error
+	if err != nil {
 		return nil, err
 	}
 

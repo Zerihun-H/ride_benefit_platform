@@ -4,8 +4,10 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"net/http"
-	"rideBenefit/internal/constant/model"
-	Employee "rideBenefit/internal/module/employee"
+	"rideBenefit/internal/constant"
+	model "rideBenefit/internal/constant/model"
+	"rideBenefit/internal/module/auth"
+	"rideBenefit/internal/module/employee"
 	"strconv"
 	"time"
 
@@ -30,27 +32,46 @@ type EmployeeHandler interface {
 }
 
 type employeeHandler struct {
-	EmployeeCase Employee.Usecase
+	Usecase employee.Usecase
 }
 
 // EmployeeInit is to initialize the rest handler for domain Employee
-func EmployeeInit(EmployeeCase Employee.Usecase) EmployeeHandler {
+func EmployeeInit(Usecase employee.Usecase) EmployeeHandler {
+
 	return &employeeHandler{
-		EmployeeCase,
+		Usecase,
 	}
 }
 
 func (dh *employeeHandler) GetEmployee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	// Check if the diver ID param is valid
+	roleID, err := strconv.Atoi(r.Header.Get("rle"))
+	if err != nil {
+		http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		return
+	}
+	// Check if the role has the required permission
+	yes, err := auth.AuthService().RoleHasPermission(uint64(roleID), constant.PermFetchEmployee)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if !yes {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// Check if the employee ID param is valid
+
 	employeeID := ps.ByName("employeeID")
 	// Convert the employeeID string to uint64
 	id, err := strconv.Atoi(employeeID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
 		return
 	}
 
-	employee, err := dh.EmployeeCase.GetEmployee(uint64(id))
+	employee, err := dh.Usecase.GetEmployee(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			http.Error(w, gorm.ErrRecordNotFound.Error(), http.StatusNotFound)
@@ -70,10 +91,10 @@ func (dh *employeeHandler) AddEmployee(w http.ResponseWriter, r *http.Request, p
 	employee := &model.Employee{}
 	err := json.NewDecoder(r.Body).Decode(&employee)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
-	drv, err := dh.EmployeeCase.AddEmployee(employee)
+	drv, err := dh.Usecase.AddEmployee(employee)
 	if err != nil {
 		http.Error(w, "", http.StatusInternalServerError)
 		return
@@ -89,11 +110,11 @@ func (dh *employeeHandler) UpdateEmployee(w http.ResponseWriter, r *http.Request
 	employee := &model.Employee{}
 	err := json.NewDecoder(r.Body).Decode(&employee)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 
-	drv, err := dh.EmployeeCase.UpdateEmployee(employee)
+	drv, err := dh.Usecase.UpdateEmployee(employee)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		return
@@ -109,12 +130,12 @@ func (dh *employeeHandler) DeleteEmployee(w http.ResponseWriter, r *http.Request
 	// Convert the employeeID string to uint64
 	id, err := strconv.Atoi(employeeID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
 	}
-	err = dh.EmployeeCase.DeleteEmployee(uint64(id))
+	err = dh.Usecase.DeleteEmployee(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			http.Error(w, model.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
+			http.Error(w, constant.ErrInvalidEmployeeID.Error(), http.StatusBadRequest)
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)
@@ -143,7 +164,7 @@ func (dh *employeeHandler) AddEmployeesExcel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err = dh.EmployeeCase.AddEmployees(employees)
+	err = dh.Usecase.AddEmployees(employees)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -166,7 +187,7 @@ func (dh *employeeHandler) AddEmployeesCSV(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = dh.EmployeeCase.AddEmployees(employees)
+	err = dh.Usecase.AddEmployees(employees)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

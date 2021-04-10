@@ -1,18 +1,20 @@
 package rest
 
 import (
+	"encoding/json"
 	"net/http"
-	auth "rideBenefit/internal/module/auth"
+	"rideBenefit/internal/constant/model"
+	"rideBenefit/internal/module/auth"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 // AuthHandler contains the function of handler for domain Auth
 type AuthHandler interface {
-	GetAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
-	AddAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
-	UpdateAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
-	DeleteAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
+	Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
+	RefreshAccessToken(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
+	RolePermissions(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 }
 
 type authHandler struct {
@@ -26,15 +28,50 @@ func AuthInit(AuthCase auth.Usecase) AuthHandler {
 	}
 }
 
-func (dh *authHandler) GetAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (ah *authHandler) Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	login := &model.LoginModel{}
+
+	err := json.NewDecoder(r.Body).Decode(login)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	validUser, accessToken, err := ah.AuthCase.Login(login)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !validUser {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	w.Write([]byte(accessToken))
 }
 
-func (dh *authHandler) AddAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (ah *authHandler) RefreshAccessToken(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
+	w.WriteHeader(http.StatusOK)
 }
-func (dh *authHandler) UpdateAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
-}
-func (dh *authHandler) DeleteAuth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (ah *authHandler) RolePermissions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	roleID, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 
+		return
+	}
+
+	permissions, err := ah.AuthCase.RolePermissions(uint64(roleID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+		return
+	}
+
+	json.NewEncoder(w).Encode(permissions)
+		// w.Write([]byte(permissions))
 }
+
+//

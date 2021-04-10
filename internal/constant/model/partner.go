@@ -15,7 +15,7 @@ type Partner struct {
 	PhotoURL    string `json:"photoURL"`
 	ServiceID   uint64 `json:"serviceID"`
 	Description string `json:"description"`
-	Users       []User `json:"users" gorm:"foreignKey:PartnerID"`
+	// Users       []User `json:"users" gorm:"foreignKey:PartnerID"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

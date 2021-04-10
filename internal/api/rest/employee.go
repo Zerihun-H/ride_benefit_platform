@@ -4,16 +4,20 @@ import (
 	"net/http"
 
 	"rideBenefit/internal/handler/rest"
+	mw "rideBenefit/internal/handler/rest/middleware"
 	"rideBenefit/platform/httprouter"
+
+	"github.com/rileyr/middleware"
 )
 
 // EmployeeRouting returns the list of routers for domain employee
 func EmployeeRouting(handler rest.EmployeeHandler) []httprouter.Router {
 	return []httprouter.Router{
 		{ // Get employee
-			Method:  http.MethodGet,
-			Path:    "/employees/:employeeID",
-			Handler: handler.GetEmployee,
+			Method:      http.MethodGet,
+			Path:        "/employees/:employeeID",
+			Handler:     handler.GetEmployee,
+			Middlewares: []middleware.Middleware{mw.ValidateAccessToken},
 		}, { // Add employee
 			Method:  http.MethodPost,
 			Path:    "/employees",

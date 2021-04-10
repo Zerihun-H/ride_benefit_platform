@@ -3,14 +3,15 @@ package model
 import (
 	"time"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	"gorm.io/gorm"
 )
 
 type Role struct {
-	ID          uint64           `json:"id" gorm:"primarykey"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	Permissions []RolePermission `json:"permissions" gorm:"foreignKey:RoleID"`
+	ID          uint64       `json:"id" gorm:"primarykey"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Permissions []Permission `json:"permissions" gorm:"many2many:role_permissions;"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -21,7 +22,6 @@ type Permission struct {
 	ID          uint64 `json:"id" gorm:"primarykey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	ResourceID  uint64 `json:"resourceID"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -29,22 +29,30 @@ type Permission struct {
 }
 
 type RolePermission struct {
-	ID           uint64 `json:"id" gorm:"primarykey"`
-	RoleID       uint64 `json:"roleID"`
-	PermissionID uint64 `json:"permissionID"`
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	RoleID       uint64     `json:"roleID"`
+	PermissionID uint64     `json:"permissionID"`
+	Role         Role       `json:"Role" gorm:"foreignKey:RoleID"`
+	Permission   Permission `json:"Permission" gorm:"foreignKey:RoleID"`
 }
 
-type Resource struct {
-	ID   uint   `gorm:"primarykey"`
-	Name string `json:"name"`
+// For implementing an in memory role permission cache
+type RolesPermissions map[string][]string
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+type LoginModel struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
+// AccessTokenClaims ...
+type AccessTokenClaims struct {
+	UserID uint64 `json:"uid"`
+	RoleID string `json:"rle"`
+	jwt.StandardClaims
+}
 
+// RefreshTokenClaims ...
+type RefreshTokenClaims struct {
+	UserID uint64 `json:"uid"`
+	RoleID string `json:"rle"`
+	jwt.StandardClaims
+}

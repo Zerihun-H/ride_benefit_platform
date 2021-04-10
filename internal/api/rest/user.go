@@ -12,22 +12,22 @@ func UserRouting(handler rest.UserHandler) []httprouter.Router {
 	return []httprouter.Router{
 		{
 			Method:  http.MethodGet,
-			Path:    "/user/:userID",
+			Path:    "/users/:userID",
 			Handler: handler.GetUser,
 		},
 		{
 			Method:  http.MethodPost,
-			Path:    "/user",
+			Path:    "/users",
 			Handler: handler.AddUser,
 		},
 		{
 			Method:  http.MethodPatch,
-			Path:    "/user",
+			Path:    "/users",
 			Handler: handler.UpdateUser,
 		},
 		{
 			Method:  http.MethodDelete,
-			Path:    "/user/:userID",
+			Path:    "/users/:userID",
 			Handler: handler.DeleteUser,
 		},
 	}

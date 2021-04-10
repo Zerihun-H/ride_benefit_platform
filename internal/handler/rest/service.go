@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"rideBenefit/internal/constant"
 	"rideBenefit/internal/constant/model"
 	service "rideBenefit/internal/module/service"
 	"strconv"
@@ -36,7 +37,7 @@ func (dh *serviceHandler) GetService(w http.ResponseWriter, r *http.Request, ps 
 	// Convert the serviceID string to uint64
 	id, err := strconv.Atoi(serviceID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidServiceID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidServiceID.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,7 +60,7 @@ func (dh *serviceHandler) AddService(w http.ResponseWriter, r *http.Request, ps 
 	service := &model.Service{}
 	err := json.NewDecoder(r.Body).Decode(&service)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 	part, err := dh.ServiceCase.AddService(service)
@@ -77,7 +78,7 @@ func (dh *serviceHandler) UpdateService(w http.ResponseWriter, r *http.Request, 
 	service := &model.Service{}
 	err := json.NewDecoder(r.Body).Decode(&service)
 	if err != nil {
-		http.Error(w, model.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidRequestBody.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -97,12 +98,12 @@ func (dh *serviceHandler) DeleteService(w http.ResponseWriter, r *http.Request, 
 	// Convert the serviceID string to uint64
 	id, err := strconv.Atoi(serviceID)
 	if err != nil {
-		http.Error(w, model.ErrInvalidServiceID.Error(), http.StatusBadRequest)
+		http.Error(w, constant.ErrInvalidServiceID.Error(), http.StatusBadRequest)
 	}
 	err = dh.ServiceCase.DeleteService(uint64(id))
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			http.Error(w, model.ErrInvalidServiceID.Error(), http.StatusBadRequest)
+			http.Error(w, constant.ErrInvalidServiceID.Error(), http.StatusBadRequest)
 			return
 		}
 		http.Error(w, "", http.StatusInternalServerError)
